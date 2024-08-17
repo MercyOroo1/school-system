@@ -67,7 +67,7 @@ class PendingApplicationsResource(Resource):
                 'first_name': app.first_name,
                 'middle_name': app.middle_name,
                 'surname': app.surname,
-                'dob': app.dob.isoformat(),
+                'dob': app.dob,
                 'gender': app.gender,
                 'current_class': app.current_class,
                 'admission_class': app.admission_class,

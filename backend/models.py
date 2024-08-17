@@ -27,7 +27,7 @@ class RegisteredStudent(db.Model):
 
 class StudentApplication(db.Model):
     __tablename__ = 'student_applications'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.Text, nullable=False)
     middle_name = db.Column(db.Text, nullable=False)
     surname = db.Column(db.Text, nullable=False)
