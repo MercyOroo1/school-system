@@ -31,7 +31,7 @@ class StudentApplication(db.Model):
     first_name = db.Column(db.Text, nullable=False)
     middle_name = db.Column(db.Text, nullable=False)
     surname = db.Column(db.Text, nullable=False)
-    dob = db.Column(db.Date, nullable=False)
+    dob = db.Column(db.Text, nullable=False)
     gender = db.Column(db.Text, nullable=False)
     current_class = db.Column(db.Text, nullable=False)
     admission_class = db.Column(db.Text, nullable=False)

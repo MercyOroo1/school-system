@@ -7,12 +7,14 @@ from dotenv import load_dotenv
 from flask_cors import CORS
 from flask_bcrypt import Bcrypt
 from models import db 
+from application import application_bp
 
 app = Flask(__name__)
  
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///property.db' # change 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'We are winners'
+app.register_blueprint(application_bp)
 
 jwt = JWTManager(app)
 db.init_app(app)
