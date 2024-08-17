@@ -7,26 +7,26 @@ from flask_sqlalchemy import SQLAlchemy
 
 
 class SubjectTeacher(db.Model):
-    _tablename_ = 'subject_teacher'
+    __tablename__ = 'subject_teacher'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     subject_id = db.Column(db.BigInteger, nullable=False)
     teacher_id = db.Column(db.BigInteger, nullable=False)
 
 class Subject(db.Model):
-    _tablename_ = 'subjects'
+    __tablename__ = 'subjects'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     name = db.Column(db.BigInteger, nullable=False)
     column_3 = db.Column(db.BigInteger, nullable=False)
     subject_teacher_id = db.Column(db.BigInteger, db.ForeignKey('subject_teacher.id'))
 
 class RegisteredStudent(db.Model):
-    _tablename_ = 'registered_students'
+    __tablename__ = 'registered_students'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     first_name = db.Column(db.Text, nullable=False)
     student_application = db.relationship('StudentApplication', backref='registered_student', uselist=False)
 
 class StudentApplication(db.Model):
-    _tablename_ = 'student_applications'
+    __tablename__ = 'student_applications'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     first_name = db.Column(db.Text, nullable=False)
     middle_name = db.Column(db.Text, nullable=False)
@@ -49,27 +49,27 @@ class StudentApplication(db.Model):
     registered_student_id = db.Column(db.BigInteger, db.ForeignKey('registered_students.id'), nullable=True, unique=True)
 
 class Report(db.Model):
-    _tablename_ = 'reports'
+    __tablename__ = 'reports'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     student_id = db.Column(db.BigInteger, db.ForeignKey('registered_students.id'), nullable=False)
     subject_id = db.Column(db.BigInteger, db.ForeignKey('subjects.id'), nullable=False)
     comment = db.Column(db.Text, nullable=False)
 
 class ApplicantSibling(db.Model):
-    _tablename_ = 'applicant_siblings'
+    __tablename__ = 'applicant_siblings'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False)
     grade = db.Column(db.Text, nullable=False)
     application_id = db.Column(db.BigInteger, nullable=False)
 
 class Teacher(db.Model):
-    _tablename_ = 'teachers'
+    __tablename__ = 'teachers'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     name = db.Column(db.BigInteger, nullable=False)
     column_3 = db.Column(db.BigInteger, nullable=False)
 
 class SuspendedStudent(db.Model):
-    _tablename_ = 'suspended_students'
+    __tablename__ = 'suspended_students'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
     name = db.Column(db.Text, nullable=False)
     class_ = db.Column(db.Text, nullable=False)
