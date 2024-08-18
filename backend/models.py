@@ -21,9 +21,27 @@ class Subject(db.Model):
 
 class RegisteredStudent(db.Model):
     __tablename__ = 'registered_students'
-    id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
+    id = db.Column(db.Integer, primary_key=True)
     first_name = db.Column(db.Text, nullable=False)
-    student_application = db.relationship('StudentApplication', backref='registered_student', uselist=False)
+    middle_name = db.Column(db.Text, nullable=False)
+    surname = db.Column(db.Text, nullable=False)
+    dob = db.Column(db.Text, nullable=False)
+    gender = db.Column(db.Text, nullable=False)
+    current_class = db.Column(db.Text, nullable=False)
+    admission_class = db.Column(db.Text, nullable=False)
+    residence_name = db.Column(db.Text, nullable=False)
+    current_school = db.Column(db.Text, nullable=False)
+    nationality = db.Column(db.Text, nullable=False)
+    phone_number = db.Column(db.Text, nullable=False)
+    alternative_number = db.Column(db.Text, nullable=False)
+    email = db.Column(db.Text, nullable=False)
+    sibling = db.Column(db.Boolean, nullable=False)
+    sibling_num = db.Column(db.BigInteger, nullable=False)
+    parent_names = db.Column(db.Text, nullable=False)
+    parent_ = db.Column(db.BigInteger, nullable=False)
+    
+
+    student_application = db.relationship('StudentApplication', back_populates='registered_student', uselist=False)
 
 class StudentApplication(db.Model):
     __tablename__ = 'student_applications'
@@ -47,7 +65,7 @@ class StudentApplication(db.Model):
     parent_ = db.Column(db.BigInteger, nullable=False)
     status = db.Column(db.Text, nullable=True)
     registered_student_id = db.Column(db.BigInteger, db.ForeignKey('registered_students.id'), nullable=True, unique=True)
-
+    registered_student = db.relationship('RegisteredStudent', back_populates='student_application', uselist=False)
 class Report(db.Model):
     __tablename__ = 'reports'
     id = db.Column(db.BigInteger, primary_key=True, autoincrement=True)
@@ -78,4 +96,3 @@ class SuspendedStudent(db.Model):
     end = db.Column(db.Date, nullable=False)
     sus_no = db.Column(db.BigInteger, nullable=False)
     registered_student_id = db.Column(db.BigInteger, db.ForeignKey('registered_students.id'))
-

@@ -1,6 +1,6 @@
 from flask import Flask, request
 from flask_restful import Resource, Api, reqparse
-from models import db, StudentApplication  # Replace with your actual file names
+from models import db, StudentApplication, RegisteredStudent
 from flask import Blueprint
 
 application_bp = Blueprint('application_bp', __name__, url_prefix='/application')
@@ -48,7 +48,7 @@ class StudentApplicationResource(Resource):
             sibling_num=args['sibling_num'],
             parent_names=args['parent_names'],
             parent_=args['parent_'],
-            status='pending') 
+            status='pending')
 
         db.session.add(student_application)
         db.session.commit()
@@ -89,3 +89,57 @@ class PendingApplicationsResource(Resource):
         return applications_list, 200
 
 application_api.add_resource(PendingApplicationsResource, '/applications/pending')
+
+
+
+class ApproveApplicationsResource(Resource):
+
+    def patch(self, application_id):
+        parser = reqparse.RequestParser()
+        parser.add_argument('status', required=True, help="Status cannot be blank.")
+        data = parser.parse_args()
+
+        application = StudentApplication.query.get_or_404(application_id)
+
+        if data['status'] not in ['approved', 'rejected']:
+            return {'message': 'Invalid status.'}, 400
+
+        application.status = data['status']
+
+        if application.status == 'approved':
+            
+            new_student = RegisteredStudent(
+                first_name=application.first_name,
+                middle_name=application.middle_name,
+                surname=application.surname,
+                dob=application.dob,
+                gender=application.gender,
+                current_class=application.current_class,
+                admission_class=application.admission_class,
+                residence_name=application.residence_name,
+                current_school=application.current_school,
+                nationality=application.nationality,
+                phone_number=application.phone_number,
+                alternative_number=application.alternative_number,
+                email=application.email,
+                sibling=application.sibling,
+                sibling_num=application.sibling_num,
+                parent_names=application.parent_names,
+                parent_=application.parent_
+            )
+
+            db.session.add(new_student)
+            db.session.commit()
+
+           
+            application.registered_student_id = new_student.id
+            db.session.commit()
+
+        db.session.commit()
+
+        return {
+            'message': 'Application status updated successfully.',
+            'application_status': application.status
+        }, 200
+
+application_api.add_resource(ApproveApplicationsResource, '/<int:application_id>')
