@@ -10,7 +10,7 @@ from models import db
 from application import application_bp
 
 app = Flask(__name__)
- 
+CORS(app) 
 app.config['SQLALCHEMY_DATABASE_URI'] = 'sqlite:///property.db' # change 
 app.config['SQLALCHEMY_TRACK_MODIFICATIONS'] = False
 app.config['JWT_SECRET_KEY'] = 'We are winners'
