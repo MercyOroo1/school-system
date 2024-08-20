@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 import axios from 'axios';
 
 const StudentApplicationForm = () => {
@@ -22,7 +22,18 @@ const StudentApplicationForm = () => {
         parent_: 0,
     });
 
+    const [siblingFields, setSiblingFields] = useState([]);
+    const [useSiblingDetails, setUseSiblingDetails] = useState(false);
+    const [parentGuardianType, setParentGuardianType] = useState('');
     const [message, setMessage] = useState('');
+    const [isFormValid, setIsFormValid] = useState(false);
+
+    useEffect(() => {
+        // Validate form to check if all required fields are filled
+        const isValid = Object.values(formData).every(value => value !== '') &&
+                        (formData.sibling ? formData.sibling_num > 0 : true);
+        setIsFormValid(isValid);
+    }, [formData]);
 
     const handleChange = (e) => {
         const { name, value, type, checked } = e.target;
@@ -32,6 +43,12 @@ const StudentApplicationForm = () => {
         });
     };
 
+    const handleSiblingNumChange = (e) => {
+        const siblingNum = e.target.value;
+        setFormData({ ...formData, sibling_num: siblingNum });
+        setSiblingFields([...Array(parseInt(siblingNum)).keys()]);
+    };
+
     const handleSubmit = async (e) => {
         e.preventDefault();
         try {
@@ -39,6 +56,21 @@ const StudentApplicationForm = () => {
             setMessage(response.data.message);
         } catch (error) {
             setMessage('An error occurred. Please try again.');
+            console.error(error);
+        }
+    };
+
+    const handleUseSiblingDetails = async () => {
+        try {
+            const response = await axios.get(`http://127.0.0.1:5000/application/check_sibling/${formData.sibling_num}`);
+            if (response.data.found) {
+                setMessage('Sibling details found and applied successfully.');
+            } else {
+                setMessage('Sibling not found. Please enter parent/guardian details.');
+                setUseSiblingDetails(false);
+            }
+        } catch (error) {
+            setMessage('Error fetching sibling details.');
             console.error(error);
         }
     };
@@ -109,22 +141,51 @@ const StudentApplicationForm = () => {
                     <label>Sibling:</label>
                     <input type="checkbox" name="sibling" checked={formData.sibling} onChange={handleChange} />
                 </div>
-                <div>
-                    <label>Number of Siblings:</label>
-                    <input type="number" name="sibling_num" value={formData.sibling_num} onChange={handleChange} required />
-                </div>
-                <div>
-                    <label>Parent Names:</label>
-                    <input type="text" name="parent_names" value={formData.parent_names} onChange={handleChange} required />
-                </div>
-                <div>
-                    <label>Parent Information:</label>
-                    <input type="number" name="parent_" value={formData.parent_} onChange={handleChange} required />
-                </div>
-                <button type="submit">Submit Application</button>
+                {formData.sibling && (
+                    <>
+                        <div>
+                            <label>Number of Siblings:</label>
+                            <input type="number" name="sibling_num" value={formData.sibling_num} onChange={handleSiblingNumChange} required />
+                        </div>
+                        {siblingFields.map((_, index) => (
+                            <div key={index}>
+                                <label>Sibling Name {index + 1}:</label>
+                                <input type="text" name={`sibling_name_${index}`} onChange={handleChange} required />
+                                <label>Sibling Grade {index + 1}:</label>
+                                <input type="text" name={`sibling_grade_${index}`} onChange={handleChange} required />
+                            </div>
+                        ))}
+                        <div>
+                            <label>Use sibling parent/guardian details:</label>
+                            <input type="radio" name="use_sibling_details" onClick={handleUseSiblingDetails} />
+                        </div>
+                        {!useSiblingDetails && (
+                            <>
+                                <div>
+                                    <label>Enter Parent/Guardian Details:</label>
+                                    <input type="radio" name="enter_parent_guardian" onClick={() => setParentGuardianType('parent')} />
+                                </div>
+                                {parentGuardianType && (
+                                    <>
+                                        <div>
+                                            <label>{parentGuardianType === 'parent' ? 'Parent' : 'Guardian'} Name:</label>
+                                            <input type="text" name="parent_names" value={formData.parent_names} onChange={handleChange} required />
+                                        </div>
+                                        <div>
+                                            <label>Parent Information:</label>
+                                            <input type="number" name="parent_" value={formData.parent_} onChange={handleChange} required />
+                                        </div>
+                                    </>
+                                )}
+                            </>
+                        )}
+                    </>
+                )}
+                <button type="submit" disabled={!isFormValid}>Submit Application</button>
             </form>
         </div>
     );
 };
 
-export default StudentApplicationForm;
+export default StudentApplicationForm:
+
